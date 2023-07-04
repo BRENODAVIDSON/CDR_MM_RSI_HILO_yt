@@ -11,7 +11,7 @@ Acesse agora e confira todos os benefícios Exclusivos aos participantes do CLUB
 INSTAGRAM: @danilo.profit
 TIKTOK: @danilo.profit
 YOUTUBE: https://rebrand.ly/yt_ClubeDoRobo
-VÍDEO REFERENTE A ESTE CÓDIGO: --
+VÍDEO REFERENTE A ESTE CÓDIGO: https://youtu.be/EChj57l3r6I
 _____________________________________________________________________________
 
   .g8"""bgd `7MMF'      `7MMF'   `7MF'`7MM"""Yp, `7MM"""YMM
@@ -49,6 +49,50 @@ _____________________________________________________________________________
 INSTAGRAM: @danilo.profit
 TIKTOK: @danilo.profit
 YOUTUBE: https://rebrand.ly/yt_ClubeDoRobo
-VÍDEO REFERENTE A ESTE CÓDIGO: ---
+VÍDEO REFERENTE A ESTE CÓDIGO: https://youtu.be/EChj57l3r6I
 _____________________________________________________________________________
 }
+
+VAR
+sinalC,sinalV,stopC,stopV : booleano;
+cor : inteiro;
+
+//VARIÁVEIS DA ESTRATÉGIA
+mm,vIFR,dirHiLo : float; // colocar aqui as variáveis necessárias <<----------
+
+BEGIN
+
+  //PASSO 1 | CARREGAR INDICADOR
+  mm := mediaexp(29,fechamento);// colocar aqui os indicadores necessários <<----------
+  vIFR := ifr(14);
+  dirHiLo := HiloActivator(2)|1|;
+    
+  //PASSO 2 | SINAIS DE ENTRADA
+  sinalC := (fechamento > mm) e (vIFR > 50) e (dirHiLo = 1); //colocar aqui a configuração do sinal de entrada de compra <<---------- (Retirar a // do inicio da linha antes de editar)   
+  sinalV := (fechamento < mm) e (vIFR < 50) e (dirHiLo = 0); //colocar aqui a configuração do sinal de entrada de venda <<---------- (Retirar a // do inicio da linha antes de editar)
+  
+  //PASSO 3 | SINAIS DE SAÍDAS
+  stopC := (dirHiLo = 0); //colocar aqui a configuração do sinal de saída de compra <<---------- (Retirar a // do inicio da linha antes de editar)  
+  stopV := (dirHiLo = 1); //colocar aqui a configuração do sinal de saída de venda <<---------- (Retirar a // do inicio da linha antes de editar)
+
+  //========== NÃO MUDAR ABAIXO DESTA LINHA ==========
+  
+  //EXECUÇÃO DE ENTRADA
+  se (sinalC) e (not IsBought) e (not IsSold) entao BuyAtMarket;
+  se (sinalV) e (not IsBought) e (not IsSold) entao SellShortAtMarket;
+  
+  //EXECUÇÃO DE SAÍDA
+  se (IsBought) e (stopC) entao SellToCoverAtMarket;
+  se (IsSold) e (stopV) entao BuyToCoverAtMarket;
+  
+  //COLORAÇÃO
+  se sinalC entao cor:=cllime
+  senao se sinalV entao cor:=clred
+  senao cor:=clwhite;
+  
+  se (cor[1] = cllime) e (not stopC) entao cor:=cllime;
+  se (cor[1] = clred) e (not stopV) entao cor:=clred;
+  
+  PaintBar(cor);
+
+END;
